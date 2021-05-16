@@ -59,14 +59,16 @@ def sync_to_notion(star):
             'Homepage': {'url': star.get('homepage') or None},
             'URL': {'url': star.get('html_url')},
             'Archived': {'checkbox': star.get('archived', False)},
-            'Language': {'select': {'name': star.get('language') or ''}},
-            'License': {'select': {'name': (star.get('license') or {}).get('name') or ''}},
+            'Language': {'rich_text': [{'type': 'text', 'text': {'content': star.get('language') or ''}}]},
+            'License': {'rich_text': [{'type': 'text', 'text': {'content': (star.get('license') or {}).get('name') or ''}}]},
         }
     }
     r = httpx.post(notion_api_url, headers=headers, json=data)
     if r.status_code == httpx.codes.OK:
         print(f'Sync {star.get("full_name")} done.')
     else:
+        resp = r.json()
+        print(f'code: {resp.get("code", "")}, message: {resp.get("message", "")}')
         r.raise_for_status()
 
 
