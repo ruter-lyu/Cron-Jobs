@@ -36,7 +36,7 @@ def notion_data_exists(res_id):
             'number': {'equals': res_id}
         }
     }
-    r = httpx.post(notion_api_url, headers=headers, data=data)
+    r = httpx.post(notion_api_url, headers=headers, json=data)
     res = r.json()
     if res.get('results'):
         return True
@@ -54,16 +54,20 @@ def sync_to_notion(star):
         'parent': {'database_id': NOTION_PAGE},
         'properties': {
             'ID': {'number': star.get('id')},
-            'Name': {'title': [{'text': {'content': star.get('full_name')}}]},
-            'Description': {'rich_text': [{'text': {'content': star.get('description') or ''}}]},
-            'Homepage': {'url': star.get('homepage') or ''},
+            'Name': {'title': [{'type': 'text', 'text': {'content': star.get('full_name')}}]},
+            'Description': {'rich_text': [{'type': 'text', 'text': {'content': star.get('description') or ''}}]},
+            'Homepage': {'url': star.get('homepage') or None},
             'URL': {'url': star.get('html_url')},
             'Archived': {'checkbox': star.get('archived', False)},
             'Language': {'select': {'name': star.get('language') or ''}},
-            'License': {'select': {'name': star.get('license', {}).get('name') or ''}},
+            'License': {'select': {'name': (star.get('license') or {}).get('name') or ''}},
         }
     }
-    httpx.post(notion_api_url, headers=headers, data=data)
+    r = httpx.post(notion_api_url, headers=headers, json=data)
+    if r.status_code == httpx.codes.OK:
+        print(f'Sync {star.get("full_name")} done.')
+    else:
+        r.raise_for_status()
 
 
 if __name__ == '__main__':
