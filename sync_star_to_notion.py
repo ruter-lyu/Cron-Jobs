@@ -43,7 +43,7 @@ def notion_data_exists(res_id):
     return False
 
 
-def sync_to_notion(data):
+def sync_to_notion(star):
     notion_api_url = 'https://api.notion.com/v1/pages'
     headers = {
         'Authorization': f'Bearer {NOTION_TOKEN}',
@@ -53,14 +53,14 @@ def sync_to_notion(data):
     data = {
         'parent': {'database_id': NOTION_PAGE},
         'properties': {
-            'ID': {'number': data.get('id')},
-            'Name': {'title': [{'text': {'content': data.get('full_name')}}]},
-            'Description': {'rich_text': [{'text': {'content': data.get('description') or ''}}]},
-            'Homepage': {'url': data.get('homepage') or ''},
-            'URL': {'url': data.get('html_url')},
-            'Archived': {'checkbox': data.get('archived', False)},
-            'Language': {'select': {'name': data.get('language') or ''}},
-            'License': {'select': {'name': data.get('license', {}).get('name') or ''}},
+            'ID': {'number': star.get('id')},
+            'Name': {'title': [{'text': {'content': star.get('full_name')}}]},
+            'Description': {'rich_text': [{'text': {'content': star.get('description') or ''}}]},
+            'Homepage': {'url': star.get('homepage') or ''},
+            'URL': {'url': star.get('html_url')},
+            'Archived': {'checkbox': star.get('archived', False)},
+            'Language': {'select': {'name': star.get('language') or ''}},
+            'License': {'select': {'name': star.get('license', {}).get('name') or ''}},
         }
     }
     httpx.post(notion_api_url, headers=headers, data=data)
@@ -70,4 +70,7 @@ if __name__ == '__main__':
     stars_lst = get_github_stars()
     for star in stars_lst:
         if not notion_data_exists(star.get('id')):
+            print(f'Sync {star.get("full_name")} to Notion...')
             sync_to_notion(star)
+        else:
+            print(f'Data {star.get("full_name")} already exists, trying next...')
