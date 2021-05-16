@@ -24,4 +24,6 @@ jobs:
       - name: Run Script To Sync GitHub Stars To Notion
         run: python sync_star_to_notion.py
         env:
+          GITHUB_USER: ${{ secrets.GH_USER }}
+          NOTION_PAGE: ${{ secrets.NOTION_STAR_PAGE }}
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
