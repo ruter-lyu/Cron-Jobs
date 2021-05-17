@@ -18,12 +18,26 @@ def get_github_stars():
         data = r.json()
         if not data:
             break
+        data = get_diff_data(data)
         stars_lst.extend(data)
         page += 1
     return stars_lst
 
 
-def notion_data_exists(res_id):
+def get_diff_data(stars):
+    diff_stars = []
+    res_ids = [star.get('id') for star in stars]
+    pages = get_notion_data(res_ids)
+    page_ids = [page.get('properties').get('ID').get('number') for page in pages]
+    for star in stars:
+        if star.get('id') not in page_ids:
+            diff_stars.append(star)
+        else:
+            print(f'Data {star.get("full_name")} already exists, trying next...')
+    return diff_stars
+
+
+def get_notion_data(res_ids):
     notion_api_url = f'https://api.notion.com/v1/databases/{NOTION_PAGE}/query'
     headers = {
         'Authorization': f'Bearer {NOTION_TOKEN}',
@@ -32,15 +46,15 @@ def notion_data_exists(res_id):
     }
     data = {
         'filter': {
-            'property': 'ID',
-            'number': {'equals': res_id}
+            'or': [{
+                'property': 'ID',
+                'number': {'equals': res_id}
+            } for res_id in res_ids]
         }
     }
     r = httpx.post(notion_api_url, headers=headers, json=data)
     res = r.json()
-    if res.get('results'):
-        return True
-    return False
+    return res.get('results', [])
 
 
 def sync_to_notion(star):
@@ -75,8 +89,5 @@ def sync_to_notion(star):
 if __name__ == '__main__':
     stars_lst = get_github_stars()
     for star in stars_lst:
-        if not notion_data_exists(star.get('id')):
-            print(f'Sync {star.get("full_name")} to Notion...')
-            sync_to_notion(star)
-        else:
-            print(f'Data {star.get("full_name")} already exists, trying next...')
+        print(f'Sync {star.get("full_name")} to Notion...')
+        sync_to_notion(star)
