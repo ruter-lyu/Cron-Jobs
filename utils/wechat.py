@@ -38,4 +38,4 @@ class WeChatWork:
         params = self._get_basic_params(msg_type)
         params.update(msg_data)
         resp = httpx.post(msg_api_url, json=params)
-        return resp["errmsg"]
+        return resp.json().get('errmsg')
