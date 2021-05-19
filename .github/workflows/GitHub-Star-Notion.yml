@@ -1,4 +1,3 @@
-
 name: Sync GitHub Stars To Notion
 
 on:
@@ -12,17 +11,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      
+
       - name: Setup Python 3.8
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      
+
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
       - name: Run Script To Sync GitHub Stars To Notion
-        run: python sync_star_to_notion.py
+        run: python ./src/sync_star_to_notion.py
         env:
           GITHUB_USER: ${{ secrets.GH_USER }}
           NOTION_PAGE: ${{ secrets.NOTION_STAR_PAGE }}
