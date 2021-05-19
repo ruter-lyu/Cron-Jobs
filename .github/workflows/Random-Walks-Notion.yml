@@ -3,7 +3,7 @@ name: Sync GitHub Stars To Notion
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */12 * * *"
+    - cron: "30 17 * * *"
 
 jobs:
   runScripts:
@@ -20,9 +20,13 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Script To Sync GitHub Stars To Notion
-        run: python sync_star_to_notion.py
+      - name: Run Script To Pick Data From Notion
+        run: python random_walk_with_notion.py
         env:
-          GITHUB_USER: ${{ secrets.GH_USER }}
           NOTION_PAGE: ${{ secrets.NOTION_STAR_PAGE }}
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          WECHAT_CORP_ID: ${{ secrets.WECHAT_CORP_ID }}
+          WECHAT_CORP_SECRET: ${{ secrets.WECHAT_NOTIFYER_SECRET }}
+          WECHAT_AGENT_ID: ${{ secrets.WECHAT_NOTIFYER_AGENT_ID }}
+          WECHAT_TO_USER: ${{ secrets.WECHAT_NOTIFYER_USER }}
+          WECHAT_MEDIA_ID: ${{ secrets.WECHAT_NOTIFYER_MEDIA_ID }}

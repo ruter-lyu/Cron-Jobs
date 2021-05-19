@@ -6,14 +6,14 @@ class WeChatWork:
     def __init__(self, corp_id, corp_secret, agent_id, to_user=None, to_party=None, to_tag=None):
         self.corp_id = corp_id
         self.corp_secret = corp_secret
-        self.agent_id = agent_id
+        self.agent_id = int(agent_id)
         self.to_user = to_user
         self.to_party = to_party
         self.to_tag = to_tag
 
     def _get_basic_params(self, msg_type='text'):
         params = {
-            'agentid': 1,
+            'agentid': self.agent_id,
             'msgtype': msg_type
         }
         if self.to_user:
