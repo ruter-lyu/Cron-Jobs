@@ -1,4 +1,4 @@
-name: Sync GitHub Stars To Notion
+name: Random Walks With Notion
 
 on:
   workflow_dispatch:
