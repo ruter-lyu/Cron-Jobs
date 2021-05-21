@@ -3,7 +3,7 @@ name: Random Walks With Notion
 on:
   workflow_dispatch:
   schedule:
-    - cron: "30 17 * * *"
+    - cron: "30 0,8 * * *"
 
 jobs:
   runScripts:
