@@ -1,0 +1,27 @@
+name: Fami Daily Sign & Lottery
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 0 * * *"
+
+jobs:
+  runScripts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Fami Daily Sign Script
+        run: python fami_sign.py
+        env:
+          FAMI_TOKEN: ${{ secrets.FAMI_TOKEN }}
+          FAMI_DEVICE_ID: ${{ secrets.FAMI_DEVICE_ID }}
